@@ -1,0 +1,213 @@
+// Green Tycoon - Prisma Schema
+// Database: PostgreSQL
+// ORM: Prisma v5+
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// MODELO PRINCIPAL: USUARIO
+// ============================================
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+
+  // Recursos del juego
+  coins     Float    @default(0)      // Monedas (soft currency)
+  seeds     Float    @default(0)      // Semillas en inventario
+
+  // Progreso
+  totalPlantsOwned    Int      @default(1)    // Total de macetas compradas
+  prestigePoints      Int      @default(0)    // Puntos de prestigio
+  prestigeLevel       Int      @default(0)    // Nivel de prestigio
+
+  // Premium Status
+  isPremium           Boolean  @default(false)  // Flag crítico: solo backend puede modificar
+  premiumExpiresAt    DateTime?                // Para suscripciones (futuro)
+
+  // Tracking
+  lastLogin           DateTime @default(now())
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  // Analíticas
+  totalMoneySpent     Float    @default(0)     // USD reales gastados
+  totalGameTime       Int      @default(0)     // Segundos jugados
+
+  // Relaciones
+  plants              Plant[]
+  upgrades            Upgrade[]
+  premiumPurchases    PremiumPurchase[]
+  sessions            GameSession[]
+
+  @@index([email])
+  @@index([isPremium])
+}
+
+// ============================================
+// MODELO: PLANTA INDIVIDUAL
+// ============================================
+model Plant {
+  id              String   @id @default(cuid())
+  userId          String
+
+  // Tipo de planta
+  plantType       PlantType  @default(BASIC)
+  tier            FarmTier   @default(NORMAL)   // NORMAL o PREMIUM
+
+  // Estado de producción
+  isActive        Boolean    @default(true)
+  lastHarvest     DateTime   @default(now())    // Última recolección
+
+  // Semillas generadas (acumulador pasivo)
+  accumulatedSeeds Float     @default(0)
+
+  // Stats (afectados por upgrades)
+  growthSpeed     Float      @default(1.0)      // Semillas/segundo base
+
+  // Metadata
+  position        Int                           // Posición en la grilla UI
+  createdAt       DateTime   @default(now())
+
+  // Relaciones
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([tier])
+}
+
+enum PlantType {
+  BASIC       // Planta inicial
+  CACTUS      // Variante futura
+  FERN        // Variante futura
+  SUNFLOWER   // Variante futura
+}
+
+enum FarmTier {
+  NORMAL      // Free-to-play: 1.0x speed
+  PREMIUM     // Paid: 2.5x speed + auto-harvest
+}
+
+// ============================================
+// MODELO: MEJORAS (UPGRADES)
+// ============================================
+model Upgrade {
+  id              String       @id @default(cuid())
+  userId          String
+
+  upgradeType     UpgradeType
+  level           Int          @default(0)
+
+  // Costo y efectos se calculan dinámicamente en el código
+  // usando las fórmulas del GAME_DESIGN.md
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, upgradeType])  // Un usuario solo puede tener 1 registro por tipo de upgrade
+  @@index([userId])
+}
+
+enum UpgradeType {
+  GROWTH_SPEED      // Aumenta velocidad de generación de semillas
+  SEED_VALUE        // Aumenta valor de venta de semillas
+  AUTO_HARVEST      // Unlock: recolección automática
+  OFFLINE_EARNINGS  // Aumenta tiempo máximo de ganancias offline
+  BULK_SELL         // Unlock: vender todas las semillas de golpe
+}
+
+// ============================================
+// MODELO CRÍTICO: COMPRAS PREMIUM
+// ============================================
+model PremiumPurchase {
+  id                String           @id @default(cuid())
+  userId            String
+
+  // Información de la compra
+  productId         String                        // "premium_farm", "prestige_boost", etc.
+  priceUSD          Float                        // Precio en dólares
+  currency          String           @default("USD")
+
+  // Validación de pago
+  paymentProvider   PaymentProvider              // Stripe, PayPal, etc.
+  transactionId     String           @unique     // ID de la transacción del proveedor
+  webhookVerified   Boolean          @default(false)  // CRÍTICO: debe ser true para aplicar beneficios
+
+  // Metadata
+  purchasedAt       DateTime         @default(now())
+  appliedAt         DateTime?                    // Cuándo se aplicó el beneficio al usuario
+
+  // Datos crudos del webhook (para debugging)
+  webhookPayload    Json?
+
+  user              User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([transactionId])
+  @@index([webhookVerified])
+}
+
+enum PaymentProvider {
+  STRIPE
+  PAYPAL
+  APPLE_IAP       // Para versión móvil futura
+  GOOGLE_PLAY     // Para versión móvil futura
+}
+
+// ============================================
+// MODELO: SESIONES DE JUEGO (Analíticas)
+// ============================================
+model GameSession {
+  id              String     @id @default(cuid())
+  userId          String
+
+  startedAt       DateTime   @default(now())
+  endedAt         DateTime?
+
+  // Métricas de sesión
+  coinsEarned     Float      @default(0)
+  seedsCollected  Float      @default(0)
+  upgradesBought  Int        @default(0)
+
+  // Metadata
+  userAgent       String?
+  ipAddress       String?
+
+  user            User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([startedAt])
+}
+
+// ============================================
+// MODELO: EVENTOS ESPECIALES (Futuro)
+// ============================================
+model GameEvent {
+  id              String     @id @default(cuid())
+
+  name            String
+  description     String
+
+  // Bonificadores
+  globalMultiplier Float     @default(1.0)   // Multiplica producción global
+
+  // Tiempo del evento
+  startAt         DateTime
+  endAt           DateTime
+
+  isActive        Boolean    @default(true)
+
+  createdAt       DateTime   @default(now())
+
+  @@index([isActive])
+  @@index([startAt, endAt])
+}

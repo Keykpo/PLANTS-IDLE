@@ -1,0 +1,49 @@
+{
+  "name": "green-tycoon",
+  "version": "1.0.0",
+  "description": "Idle Plant Management Game - Built with Next.js",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "prisma:push": "prisma db push"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "@prisma/client": "^5.18.0",
+    "zustand": "^4.5.0",
+    "stripe": "^16.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.5.0",
+    "prisma": "^5.18.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "keywords": [
+    "idle-game",
+    "clicker",
+    "incremental",
+    "nextjs",
+    "react",
+    "typescript",
+    "tailwindcss",
+    "game-development"
+  ],
+  "author": "Green Tycoon Team",
+  "license": "MIT"
+}
