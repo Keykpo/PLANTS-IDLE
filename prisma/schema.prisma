@@ -1,5 +1,5 @@
 // Green Tycoon - Prisma Schema
-// Database: PostgreSQL
+// Database: SQLite (dev) / PostgreSQL (prod)
 // ORM: Prisma v5+
 
 generator client {
@@ -7,7 +7,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
