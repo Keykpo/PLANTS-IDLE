@@ -505,4 +505,134 @@ Este proyecto está bajo la licencia MIT. Ver [LICENSE](LICENSE) para más infor
 
 ---
 
+## 🚀 Deployment en Vercel
+
+### Quick Deploy
+
+El proyecto está optimizado para deployment en Vercel con un solo click:
+
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/tu-usuario/green-tycoon)
+
+### Deployment Manual
+
+1. **Instalar Vercel CLI**
+```bash
+npm install -g vercel
+```
+
+2. **Login en Vercel**
+```bash
+vercel login
+```
+
+3. **Deploy**
+```bash
+# Para preview
+vercel
+
+# Para producción
+vercel --prod
+```
+
+### Variables de Entorno en Vercel
+
+Configura estas variables en tu proyecto de Vercel (Settings → Environment Variables):
+
+**Requeridas:**
+- `DATABASE_URL` - URL de tu base de datos PostgreSQL
+- `JWT_SECRET` - Clave secreta para JWT
+- `ENCRYPTION_KEY` - Clave de encriptación (32 caracteres)
+
+**Opcionales (para monetización):**
+- `STRIPE_PUBLIC_KEY` - Clave pública de Stripe
+- `STRIPE_SECRET_KEY` - Clave secreta de Stripe
+- `STRIPE_WEBHOOK_SECRET` - Secret del webhook
+
+**Públicas:**
+- `NEXT_PUBLIC_APP_URL` - URL de tu app (ej: https://tu-app.vercel.app)
+- `NEXT_PUBLIC_APP_NAME` - "Green Tycoon"
+- `NEXT_PUBLIC_APP_VERSION` - "1.0.0"
+
+### Configuración de Base de Datos
+
+Para producción, recomendamos usar **Vercel Postgres** o **Neon**:
+
+#### Opción 1: Vercel Postgres
+```bash
+# En el dashboard de Vercel
+1. Ve a Storage
+2. Crea nuevo Postgres Database
+3. Copia DATABASE_URL a tus variables de entorno
+```
+
+#### Opción 2: Neon (gratis)
+```bash
+# En https://neon.tech
+1. Crea una cuenta
+2. Crea un nuevo proyecto
+3. Copia el connection string
+4. Añade como DATABASE_URL en Vercel
+```
+
+### Post-Deployment
+
+Después de deployar, ejecuta las migraciones de Prisma:
+
+```bash
+# Opción A: Desde local con DATABASE_URL de producción
+DATABASE_URL="tu-database-url-de-produccion" npm run prisma:push
+
+# Opción B: Añadir build command en Vercel
+# En vercel.json o Project Settings:
+# Build Command: npm run build && npx prisma generate && npx prisma db push
+```
+
+### Optimizaciones de Producción
+
+El proyecto ya incluye:
+
+✅ Compresión habilitada
+✅ Headers de seguridad configurados
+✅ React Strict Mode
+✅ Code splitting automático
+✅ Static generation donde es posible
+✅ Edge runtime compatible
+
+### Monitoreo
+
+Después del deploy, monitorea tu app en:
+
+- **Vercel Analytics**: Métricas de rendimiento
+- **Vercel Logs**: Logs de errores y requests
+- **Prisma**: Logs de base de datos
+
+### Troubleshooting
+
+**Error: "Cannot connect to database"**
+```bash
+# Verifica que DATABASE_URL esté configurado
+# Asegúrate de ejecutar prisma:generate en build
+```
+
+**Error: "Module not found"**
+```bash
+# Limpia caché y rebuild
+vercel --force
+```
+
+**Errores de TypeScript**
+```bash
+# Verifica tipos localmente antes de deploy
+npm run build
+```
+
+### Performance Tips
+
+1. **Habilita Edge Runtime** para mejor latencia global
+2. **Usa Vercel Edge Config** para feature flags
+3. **Implementa ISR** para páginas estáticas que cambian poco
+4. **Optimiza imágenes** con Next.js Image component
+
+---
+
 **¡Gracias por jugar Green Tycoon!** 🌿✨

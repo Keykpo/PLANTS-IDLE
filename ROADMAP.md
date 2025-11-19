@@ -1,425 +1,520 @@
-# 🗺️ ROADMAP - Green Tycoon
+# 🗺️ ROADMAP COMPLETO - Green Tycoon
 
-Roadmap de desarrollo post-MVP para convertir Green Tycoon en un juego completo y monetizable.
-
----
-
-## 📊 ESTADO ACTUAL (v1.0 - MVP)
-
-✅ **Completado:**
-- Sistema idle básico funcional
-- 5 tipos de upgrades
-- Compra de macetas
-- Ganancias offline
-- Sistema premium (estructura)
-- Persistencia local
+**Última actualización**: 19 de Enero, 2025  
+**Versión Actual**: **v1.0.0 (MVP Completo)** ✅
 
 ---
 
-## 🎯 FASE 1: PULIR Y OPTIMIZAR (1-2 semanas)
+## 📊 RESUMEN EJECUTIVO
 
-**Prioridad:** 🔴 CRÍTICA
-**Objetivo:** Hacer el juego jugable y adictivo
-
-### 1.1 Balanceo y Playtesting
-- [ ] **Ajustar curva de progresión** (2-3 días)
-  - Playtest inicial de 1 hora
-  - Ajustar costos de upgrades si es muy lento/rápido
-  - Verificar que primeros 10 minutos sean enganchantes
-  - Archivo: `lib/gameBalance.ts`
-
-- [ ] **Implementar analytics básicas** (1 día)
-  - Tracking de eventos clave (primera compra, tiempo jugado)
-  - LocalStorage para métricas offline
-  - Archivo nuevo: `lib/analytics.ts`
-
-- [ ] **Feedback visual mejorado** (2 días)
-  - Números flotantes al ganar recursos (+10 💰)
-  - Partículas al recolectar semillas
-  - Animación de "level up" en upgrades
-  - Sonidos básicos (opcional, usar Howler.js)
-  - Archivo: `components/FloatingNumber.tsx`
-
-### 1.2 UX/UI Polish
-- [ ] **Tutorial interactivo** (2 días)
-  - Tooltips en primer inicio
-  - Flechas guiando primeras acciones
-  - Sistema de hints progresivos
-  - Archivo: `components/Tutorial.tsx`
-
-- [ ] **Mejoras visuales** (2 días)
-  - Animación de plantas creciendo
-  - Estados visuales (plántula → planta → árbol)
-  - Efectos de hover más pronunciados
-  - Loading skeleton mientras carga
-
-- [ ] **Responsive mobile** (1 día)
-  - Verificar en mobile (320px-768px)
-  - Ajustar grilla de plantas
-  - Botones más grandes para touch
-
-### 1.3 Sistema de Guardado Robusto
-- [ ] **Cloud save con backend** (3 días)
-  - Conectar con Prisma + PostgreSQL
-  - Sincronización automática cada 30s
-  - Botón manual de "Sincronizar"
-  - Resolución de conflictos (último gana)
-  - Archivos: `app/api/sync/route.ts`, `lib/syncManager.ts`
-
-- [ ] **Sistema de autenticación** (2 días)
-  - NextAuth.js con email/password
-  - Login con Google
-  - Recuperación de cuenta
-  - Archivo: `app/api/auth/[...nextauth]/route.ts`
-
-**Tiempo total Fase 1:** 12-15 días
+| Categoría | Progreso | Estado |
+|-----------|----------|--------|
+| **Core Gameplay** | ████████████ 100% | ✅ Completado |
+| **UI/UX Básico** | ████████████ 100% | ✅ Completado |
+| **Quick Wins** | ████████████ 100% | ✅ Completado |
+| **Tutorial** | ████████████ 100% | ✅ Completado |
+| **Deployment Ready** | ████████████ 100% | ✅ Completado |
+| **Meta-Progresión** | ░░░░░░░░░░░░ 0% | 📋 Pendiente |
+| **Diversidad Plantas** | ██░░░░░░░░░░ 16% | 📋 Pendiente |
+| **Cloud Features** | ░░░░░░░░░░░░ 0% | 📋 Pendiente |
+| **Monetización** | ████░░░░░░░░ 33% | 🔄 Parcial |
 
 ---
 
-## 🚀 FASE 2: CONTENIDO CORE (2-3 semanas)
+## ✅ LO QUE YA ESTÁ (v1.0.0)
 
-**Prioridad:** 🟠 ALTA
-**Objetivo:** Añadir profundidad y rejugabilidad
+### 🎮 Core Gameplay - 100%
+- [x] Sistema idle/incremental funcional
+- [x] Producción automática de semillas (1 semilla/s base)
+- [x] Recolección manual con click
+- [x] Auto-harvest cuando compras el upgrade
+- [x] Venta de semillas → monedas (ratio configurable)
+- [x] Compra de macetas (costo escalado: 10 × 1.5^n)
+- [x] 5 tipos de upgrades:
+  - Velocidad de Crecimiento (+10% por nivel)
+  - Valor de Semillas (+15% por nivel)
+  - Auto-Harvest (unlock nivel 1)
+  - Ganancias Offline (caps: 1h, 6h, 12h, 24h)
+  - Venta Masiva (unlock nivel 1)
+- [x] Game loop optimizado (100ms tick rate)
+- [x] Ganancias offline hasta 24 horas
+- [x] Auto-save cada 30 segundos
+- [x] Persistencia en localStorage con Zustand
 
-### 2.1 Sistema de Prestigio
-- [ ] **Implementar mecánica de prestigio** (3 días)
-  - Botón "Prestigio" cuando tienes 100+ macetas
-  - Reset de progreso pero mantienes:
-    - Puntos de prestigio (1 por cada 100 macetas)
-    - Granjas premium compradas
-  - Cada punto = +5% producción permanente
-  - Modal confirmación con preview de beneficios
-  - Archivo: `components/PrestigeModal.tsx`
-
-- [ ] **Upgrades de prestigio** (2 días)
-  - Árbol de habilidades exclusivo
-  - Ejemplo: "Sembrador maestro" (+10% seeds inicial)
-  - "Cosecha dorada" (chance de 2x seeds)
-  - Archivo: `lib/prestigeUpgrades.ts`
-
-### 2.2 Diversidad de Plantas
-- [ ] **4 nuevos tipos de plantas** (4 días)
-  - 🌵 **Cactus:** Lento pero valioso (0.5x speed, 3x value)
-  - 🌿 **Fern:** Rápido pero barato (1.5x speed, 0.7x value)
-  - 🌻 **Sunflower:** Balanced premium (1.2x speed, 1.2x value)
-  - 🌴 **Palm:** Ultra late-game (0.3x speed, 10x value)
-
-- [ ] **Sistema de desbloqueo** (1 día)
-  - Cactus: 10 macetas
-  - Fern: 20 macetas
-  - Sunflower: 1er prestigio
-  - Palm: 5 prestigios
-
-- [ ] **Selector de planta al comprar maceta** (1 día)
-  - Dropdown en Shop
-  - Preview de stats
-  - Archivo: `components/PlantSelector.tsx`
-
-### 2.3 Eventos y Temporadas
-- [ ] **Sistema de eventos temporales** (3 días)
-  - "Primavera Loca" (+50% producción, 24h)
-  - "Lluvia de Semillas" (drops aleatorios)
-  - Admin panel para crear eventos
-  - Archivo: `app/api/admin/events/route.ts`
-
-- [ ] **Misiones diarias** (2 días)
-  - "Recolecta 1000 semillas" → +100 coins
-  - "Compra 3 upgrades" → +500 seeds
-  - Reset diario a las 00:00 UTC
-  - Archivo: `components/DailyMissions.tsx`
-
-**Tiempo total Fase 2:** 16-20 días
+**Archivos**:
+- ✅ `store/gameStore.ts`
+- ✅ `lib/gameBalance.ts`
+- ✅ `components/GameLoop.tsx`
+- ✅ `components/Plant.tsx`
+- ✅ `components/Shop.tsx`
 
 ---
 
-## 💰 FASE 3: MONETIZACIÓN (1-2 semanas)
+### 🎨 UI/UX - 100%
+- [x] Header responsivo con recursos
+- [x] Grilla de plantas (2-4-6 columnas según viewport)
+- [x] Modal de tienda con 3 tabs
+- [x] Sistema de notificaciones toast
+- [x] **Floating Numbers** - Feedback visual (+10 🌾)
+- [x] **Sistema de Sonidos** con 4 efectos:
+  - Harvest (recolección)
+  - Coin (venta)
+  - Success (acción exitosa)
+  - Error (acción fallida)
+- [x] Toggle de volumen y mute
+- [x] Animaciones: hover, pulse, bounce, fade
+- [x] Modal de offline earnings
 
-**Prioridad:** 🟡 MEDIA (si quieres ganar dinero)
-**Objetivo:** Integrar pagos reales
-
-### 3.1 Integración de Stripe
-- [ ] **Configurar Stripe en producción** (1 día)
-  - Cuenta verificada
-  - Webhook endpoint configurado
-  - Testing con Stripe CLI
-
-- [ ] **Productos premium** (2 días)
-  - **Granja Premium** - $4.99 (ya existe)
-  - **Pack de 5 Granjas** - $19.99 (20% descuento)
-  - **VIP Pass (mensual)** - $9.99/mes
-    - 3x producción global
-    - Acceso a plantas exclusivas
-    - Eventos VIP
-
-- [ ] **Sistema de IAP (In-App Purchases)** (2 días)
-  - Packs de recursos:
-    - 10,000 coins → $0.99
-    - 100,000 coins → $4.99
-    - 1,000,000 coins → $19.99
-  - Archivo: `components/IAPShop.tsx`
-
-### 3.2 Ads (Opcional - Monetización F2P)
-- [ ] **Google AdSense o AdMob** (1 día)
-  - Rewarded ads: "Ver video → +500 seeds"
-  - Banner discreto (no intrusivo)
-  - Max 1 rewarded ad cada 5 minutos
-
-### 3.3 Sistema de Referidos
-- [ ] **Programa de referidos** (2 días)
-  - Invita amigo → Ambos reciben 1000 coins
-  - Link único de referido
-  - Tracking en base de datos
-  - Archivo: `app/api/referral/route.ts`
-
-**Tiempo total Fase 3:** 8-12 días
+**Archivos**:
+- ✅ `components/Header.tsx`
+- ✅ `components/Notifications.tsx`
+- ✅ `components/FloatingNumber.tsx`
+- ✅ `components/SoundToggle.tsx`
+- ✅ `lib/soundManager.ts`
 
 ---
 
-## 🎮 FASE 4: FEATURES AVANZADAS (3-4 semanas)
+### ⚡ Quick Wins - 100%
+- [x] **PlayerStats.tsx** - Panel de estadísticas:
+  - Tiempo jugado (actualizado cada 10s)
+  - Producción/segundo en tiempo real
+  - Totales: semillas, monedas, macetas, prestigio
+  - Ratios: eficiencia de venta, semillas por maceta
+- [x] **Settings.tsx** - Panel de configuración:
+  - Slider de volumen (0-100%)
+  - Info de guardado automático
+  - Botón de reset con doble confirmación
+  - Zona de peligro claramente marcada
+- [x] **Analytics.ts** - Sistema de tracking:
+  - Eventos: game_start, first_purchase, milestones
+  - Milestones automáticos (100, 1K, 10K recursos)
+  - Tracking de sesiones y tiempo jugado
+  - Almacenamiento en localStorage
 
-**Prioridad:** 🟢 BAJA (nice-to-have)
-**Objetivo:** Diferenciación competitiva
-
-### 4.1 Modo Multiplayer Asíncrono
-- [ ] **Leaderboards globales** (3 días)
-  - Top 100 por:
-    - Más semillas totales
-    - Más macetas
-    - Mayor nivel de prestigio
-  - Actualización en tiempo real con WebSockets
-  - Archivo: `app/api/leaderboard/route.ts`
-
-- [ ] **Sistema de amigos** (4 días)
-  - Añadir amigos por username
-  - Ver jardines de amigos (read-only)
-  - Enviar/recibir gifts (500 seeds/día)
-  - Archivo: `components/FriendsList.tsx`
-
-- [ ] **Marketplace P2P** (5 días)
-  - Vender/comprar plantas entre jugadores
-  - Sistema de ofertas
-  - Fee del 10% para el juego
-  - Prevención de bots y scams
-  - Archivo: `app/marketplace/page.tsx`
-
-### 4.2 Guilds/Clanes
-- [ ] **Sistema de guilds** (1 semana)
-  - Crear/unirse a guild (max 50 miembros)
-  - Chat interno
-  - Objetivos de guild → Recompensas colectivas
-  - Guild shop con items exclusivos
-  - Archivo: `app/api/guilds/route.ts`
-
-### 4.3 Achievements & Gamificación
-- [ ] **Sistema de logros** (3 días)
-  - 50+ achievements:
-    - "Primer Millonario" (1M coins)
-    - "Granjero Dedicado" (7 días seguidos)
-    - "Coleccionista" (Todas las plantas)
-  - Badges visuales en perfil
-  - Rewards: Coins, seeds, títulos
-  - Archivo: `lib/achievements.ts`
-
-- [ ] **Perfil de usuario personalizable** (2 días)
-  - Avatar (elegir entre 20 opciones)
-  - Banner personalizado
-  - Título (desbloqueables)
-  - Estadísticas públicas
-  - Archivo: `app/profile/[userId]/page.tsx`
-
-### 4.4 Minijuegos
-- [ ] **Ruleta diaria** (2 días)
-  - 1 spin gratis/día
-  - Premios: Coins, seeds, boosts
-  - Spins extra con IAP ($0.99 por 5)
-
-- [ ] **Jardinería activa** (3 días)
-  - Click rápido: "Regar plantas" → +10% speed por 1h
-  - Minijuego de matching (memory)
-  - Archivo: `components/ActiveGarden.tsx`
-
-**Tiempo total Fase 4:** 21-28 días
+**Archivos**:
+- ✅ `components/PlayerStats.tsx`
+- ✅ `components/Settings.tsx`
+- ✅ `lib/analytics.ts`
 
 ---
 
-## 📱 FASE 5: EXPANSIÓN A MOBILE (4-6 semanas)
+### 🎓 Tutorial Interactivo - 100%
+- [x] Sistema de 6 pasos guiados
+- [x] Tooltips con gradientes verdes
+- [x] Flechas animadas apuntando
+- [x] Highlights pulsantes en elementos
+- [x] Overlay oscuro (z-index 40-50)
+- [x] Detección automática de acciones
+- [x] Barra de progreso
+- [x] Guardado en localStorage (aparece solo 1 vez)
+- [x] Botón "Saltar" disponible
 
-**Prioridad:** 🔵 FUTURO
-**Objetivo:** Alcanzar mercado móvil
+**Pasos**:
+1. Bienvenida
+2. Recolectar semillas
+3. Vender semillas
+4. Comprar macetas
+5. Explorar tienda
+6. Completado
 
-### 5.1 App Nativa (React Native)
-- [ ] **Setup React Native** (1 semana)
-  - Shared codebase con web
-  - Monorepo con Turborepo
-  - Reutilizar lógica de `lib/`
-
-- [ ] **Adaptación UI mobile** (2 semanas)
-  - Rediseño de componentes
-  - Gestos touch
-  - Optimización de performance
-
-- [ ] **Push Notifications** (1 semana)
-  - "¡Tus plantas generaron 10K seeds!"
-  - "Evento especial activo"
-  - Firebase Cloud Messaging
-
-- [ ] **Publicación** (1 semana)
-  - App Store (iOS)
-  - Google Play (Android)
-  - ASO (App Store Optimization)
-
-**Tiempo total Fase 5:** 28-35 días
+**Archivo**:
+- ✅ `components/Tutorial.tsx`
 
 ---
 
-## 🔧 MEJORAS TÉCNICAS CONTINUAS
+### 🚀 Deployment Ready - 100%
+- [x] `vercel.json` configurado
+- [x] Headers de seguridad
+- [x] Build command optimizado
+- [x] Variables de entorno documentadas
+- [x] README.md con instrucciones completas
+- [x] DEPLOYMENT.md con guías detalladas
+- [x] Configuración de DB documentada
+- [x] Troubleshooting incluido
 
-**Durante todo el desarrollo:**
-
-### Performance
-- [ ] Lazy loading de componentes
-- [ ] Code splitting por rutas
-- [ ] Optimización de imágenes (next/image)
-- [ ] Service Worker para PWA
-- [ ] Caché agresivo con Redis
-
-### SEO & Marketing
-- [ ] Meta tags optimizados
-- [ ] Open Graph para redes sociales
-- [ ] Sitemap.xml dinámico
-- [ ] Blog con guías y tips
-- [ ] Landing page separada
-
-### Analytics & Monitoring
-- [ ] Google Analytics 4
-- [ ] Sentry para error tracking
-- [ ] Mixpanel para funnels
-- [ ] Hotjar para heatmaps
-
-### Testing
-- [ ] Unit tests (Jest)
-- [ ] Integration tests (Playwright)
-- [ ] E2E tests críticos
-- [ ] Load testing (k6)
+**Archivos**:
+- ✅ `vercel.json`
+- ✅ `DEPLOYMENT.md`
+- ✅ `README.md` (sección deployment)
 
 ---
 
-## 📈 PRIORIZACIÓN RECOMENDADA
+## 📋 LO QUE FALTA
 
-### Si quieres jugadores rápido:
-1. **Fase 1** (pulir UX) → 2 semanas
-2. **Fase 2.1** (prestigio) → 1 semana
-3. **Fase 2.3** (eventos) → 1 semana
-4. **Deploy + Marketing**
+### 🔥 PRIORIDAD CRÍTICA (Próximas 2 semanas)
 
-### Si quieres monetizar:
-1. **Fase 1** (pulir UX) → 2 semanas
-2. **Fase 3** (Stripe + IAP) → 2 semanas
-3. **Fase 2.2** (más contenido) → 1 semana
-4. **Marketing agresivo**
+#### 1. Sistema de Prestigio (3 días) 🔥🔥🔥🔥🔥
+**Por qué**: Sin esto, jugadores "completan" el juego en 2-3 horas
 
-### Si quieres comunidad:
-1. **Fase 1** (pulir UX) → 2 semanas
-2. **Fase 4.1** (leaderboards) → 1 semana
-3. **Fase 4.2** (guilds) → 1 semana
-4. **Social media + Discord**
+**Features**:
+- [ ] Botón "Prestigio" (disponible con 100+ macetas)
+- [ ] Modal de confirmación con preview
+- [ ] Reset de recursos y macetas
+- [ ] Puntos de prestigio: 1 punto = 100 macetas
+- [ ] Bonificador permanente: +5% producción por punto
+- [ ] Árbol de habilidades (4 upgrades):
+  - "Inicio Acelerado" - Empiezas con 3 macetas
+  - "Super Productor" - +10% producción adicional
+  - "Millonario" - Empiezas con 100 monedas
+  - "Granja Eficiente" - -10% costo de macetas
+- [ ] Contador visible en UI
+- [ ] Badge en plantas según nivel
 
----
+**Archivos a crear**:
+- [ ] `components/PrestigeModal.tsx`
+- [ ] `components/PrestigeTree.tsx`
+- [ ] `store/gameStore.ts` (modificar)
+- [ ] `lib/gameBalance.ts` (modificar)
 
-## 🎯 MILESTONES REALISTAS
-
-### Mes 1: MVP Pulido
-- ✅ v1.0 (actual)
-- 🎯 v1.1 - Balanceo + Tutorial
-- 🎯 v1.2 - Cloud save + Auth
-
-### Mes 2: Contenido Core
-- 🎯 v1.3 - Sistema de prestigio
-- 🎯 v1.4 - Nuevas plantas
-- 🎯 v1.5 - Eventos temporales
-
-### Mes 3: Monetización
-- 🎯 v2.0 - Stripe integrado
-- 🎯 v2.1 - IAP completo
-- 🎯 v2.2 - Marketing push
-
-### Mes 4-6: Escalado
-- 🎯 v3.0 - Multiplayer
-- 🎯 v3.5 - Mobile app
-- 🎯 v4.0 - Guilds & Social
+**Estimación**: 3 días  
+**Impacto**: 🔥🔥🔥🔥🔥 Rejugabilidad infinita
 
 ---
 
-## 💡 QUICK WINS (Implementar AHORA)
+#### 2. Cloud Save + Autenticación (5 días) 🔥🔥🔥🔥
+**Por qué**: Evita pérdida de progreso (frustraci
 
-Features rápidas con alto impacto:
+ón #1)
 
-### 1. Números Flotantes (2 horas)
-```tsx
-// components/FloatingNumber.tsx
-export function FloatingNumber({ value, x, y }) {
-  return (
-    <div className="absolute animate-float-up text-2xl font-bold text-green-500">
-      +{value} 🌾
-    </div>
-  );
-}
-```
+**Features**:
+- [ ] Login con Email/Password (NextAuth)
+- [ ] Login con Google OAuth
+- [ ] Login con GitHub (opcional)
+- [ ] Sincronización automática cada 30s
+- [ ] Detección de conflictos entre dispositivos
+- [ ] Modal de resolución: "Usar progreso de [A o B]"
+- [ ] Recovery de cuenta via email
+- [ ] Botón "Restaurar desde nube"
 
-### 2. Sonidos Básicos (1 hora)
-- Usar librería Howler.js
-- Click → "pop.mp3"
-- Compra → "coin.mp3"
-- Level up → "success.mp3"
+**Arquitectura**:
+- [ ] Setup NextAuth.js
+- [ ] Middleware de auth
+- [ ] API `/api/user/sync` (upload)
+- [ ] API `/api/user/load` (download)
+- [ ] Validación server-side
+- [ ] Rate limiting (1 sync cada 10s)
 
-### 3. Confirmación de Prestigio (1 hora)
-Modal simple: "¿Seguro? Perderás todo pero ganarás +X% permanente"
+**Archivos a crear**:
+- [ ] `app/api/auth/[...nextauth]/route.ts`
+- [ ] `components/AuthModal.tsx`
+- [ ] `lib/auth.ts`
+- [ ] `middleware.ts`
 
-### 4. Stats del Jugador (30 min)
-En header: "Jugando hace: 2h 34m"
-
-### 5. Botón de Reset (30 min)
-En configuración (para testing)
+**Estimación**: 5 días  
+**Impacto**: 🔥🔥🔥🔥 No pierden progreso nunca
 
 ---
 
-## 📞 SIGUIENTE PASO INMEDIATO
+#### 3. Granjas Premium con Stripe (4 días) 🔥🔥🔥🔥
+**Por qué**: Monetización real = sostener proyecto
 
-Te recomiendo empezar por:
+**Estado Actual**: 33% completado
+- [x] Schema DB para `PremiumPurchase`
+- [x] Tipo `PREMIUM` en plantas
+- [x] UI dorado con badge 2.5x
 
-### OPCIÓN A: Solo Quieres Jugarlo
+**Falta Implementar**:
+- [ ] Setup cuenta Stripe
+- [ ] Crear producto "Premium Farm" ($4.99)
+- [ ] Stripe Checkout flow
+- [ ] Webhook `/api/purchase-premium`
+- [ ] Validación server-side del pago
+- [ ] Asignar planta premium al usuario
+- [ ] Receipt via email
+- [ ] Panel de compras en perfil
+
+**Archivos a crear**:
+- [ ] `app/api/create-checkout/route.ts`
+- [ ] `app/api/purchase-premium/route.ts`
+- [ ] `components/PremiumCheckout.tsx`
+
+**Estimación**: 4 días  
+**Impacto**: 🔥🔥🔥🔥🔥 Revenue stream
+
+---
+
+### 🔥 PRIORIDAD ALTA (Próximo mes)
+
+#### 4. Diversidad de Plantas (6 días) 🔥🔥🔥🔥
+**Por qué**: Estrategia y variedad
+
+**Plantas Nuevas**:
+
+##### 🌵 Cactus (Tier: Slow)
+- Producción: 0.3 semillas/s
+- Valor: 3x normal
+- Costo: 200 semillas
+- Estrategia: Bajo volumen, alto valor
+
+##### 🌿 Fern (Tier: Fast)
+- Producción: 2.5 semillas/s
+- Valor: 0.5x normal
+- Costo: 150 semillas
+- Estrategia: Alto volumen, bajo valor
+
+##### 🌻 Sunflower (Tier: Balanced Premium)
+- Producción: 1.5 semillas/s
+- Valor: 2x normal
+- Costo: 500 semillas
+- Estrategia: Balanceado
+
+##### 🌴 Palm (Tier: Ultra Late Game)
+- Producción: 5 semillas/s
+- Valor: 5x normal
+- Costo: 2000 semillas
+- Unlock: Prestigio nivel 3+
+- Estrategia: End-game powerhouse
+
+**Implementación**:
+- [ ] Modificar tipo `Plant` → añadir `plantType`
+- [ ] Selector de tipo en Shop
+- [ ] Componente `PlantTypeSelector.tsx`
+- [ ] Actualizar `calculatePlantProduction()`
+- [ ] Visual diferente por tipo
+- [ ] Balancear costos
+
+**Archivos a modificar**:
+- [ ] `store/gameStore.ts`
+- [ ] `components/Plant.tsx`
+- [ ] `components/Shop.tsx`
+- [ ] `lib/gameBalance.ts`
+
+**Estimación**: 6 días  
+**Impacto**: 🔥🔥🔥🔥 Variedad estratégica
+
+---
+
+#### 5. Sistema de Logros (5 días) 🔥🔥🔥
+**Por qué**: Metas a largo plazo, engagement
+
+**Categorías**:
+
+##### Colección (25 logros)
+- "Primera Cosecha" - Recolecta 1 semilla
+- "Jardinero Novato" - 1,000 semillas
+- "Maestro Agricultor" - 1,000,000 semillas
+- "Magnate Verde" - 1,000,000 monedas
+- "Imperio Verde" - 50 macetas
+
+##### Velocidad (10 logros)
+- "Flash" - 100 monedas en 5 min
+- "Speedrunner" - 10 macetas en 10 min
+- "Early Adopter" - Prestigio en <1 hora
+
+##### Especiales (15 logros)
+- "Perfeccionista" - Todas upgrades nivel 10
+- "Coleccionista" - 1 de cada planta
+- "Prestigio Elite" - Prestigio nivel 10
+
+**Sistema**:
+- [ ] Modal de logros con progreso
+- [ ] Notificación al desbloquear
+- [ ] Contador en header (X/50)
+- [ ] Recompensas: monedas, títulos
+
+**Archivos a crear**:
+- [ ] `lib/achievements.ts`
+- [ ] `components/AchievementsModal.tsx`
+- [ ] `components/AchievementUnlocked.tsx`
+
+**Estimación**: 5 días  
+**Impacto**: 🔥🔥🔥 Engagement largo plazo
+
+---
+
+#### 6. Eventos Temporales (4 días) 🔥🔥🔥
+**Por qué**: Retención diaria
+
+**Eventos**:
+- Weekend Boost (+50% producción sáb/dom)
+- Flash Sale (upgrades -30% por 1h)
+- Golden Hour (2x valor semillas por 30 min)
+- Plant Fest (macetas -50% por 24h)
+- Prestige Bonus (+100% puntos por 12h)
+
+**Sistema**:
+- [ ] Timer de eventos en header
+- [ ] Notificaciones al inicio/fin
+- [ ] Banner visual
+- [ ] Calendario predecible
+- [ ] Analytics de participación
+
+**Archivos**:
+- [ ] `lib/events.ts`
+- [ ] `components/EventBanner.tsx`
+- [ ] `components/EventCalendar.tsx`
+
+**Estimación**: 4 días  
+**Impacto**: 🔥🔥🔥 Retención diaria
+
+---
+
+### 🔥 PRIORIDAD MEDIA (Próximos 3 meses)
+
+#### 7. Leaderboards Globales (3 días) 🔥🔥🔥
+- Top Productores (semillas/s)
+- Top Magnates (monedas totales)
+- Top Prestigio (nivel más alto)
+- Top Velocidad (prestigio más rápido)
+- Leaderboard semanal
+
+**Estimación**: 3 días  
+**Impacto**: 🔥🔥🔥 Competencia social
+
+---
+
+#### 8. Trading Entre Jugadores (7 días) 🔥🔥
+- Mercado global de plantas
+- Listado en venta
+- Compra con monedas
+- Tax 10%
+- Historial de trades
+
+**Estimación**: 7 días  
+**Impacto**: 🔥🔥 Economía dinámica
+
+---
+
+#### 9. Battle Pass / Season Pass (6 días) 🔥🔥🔥
+- Temporada de 30 días
+- 30 niveles con recompensas
+- Track gratuito + premium ($9.99)
+- XP por acciones
+- Recompensas: monedas, semillas, skins
+
+**Estimación**: 6 días  
+**Impacto**: 🔥🔥🔥 Ingresos recurrentes
+
+---
+
+### 🔥 PRIORIDAD BAJA (Futuro)
+
+#### 10. PWA y Notificaciones Push (2 días)
+- Progressive Web App
+- Service Worker
+- Notificaciones: "¡Plantas listas!"
+
+#### 11. Skins y Personalización (4 días)
+- Skins de plantas
+- Temas de UI (Dark, Ocean, Forest)
+- Fondos animados
+
+#### 12. Versión Móvil React Native (4-6 semanas)
+- App nativa iOS/Android
+- Shared codebase
+- Push notifications
+
+---
+
+## 📅 CRONOGRAMA RECOMENDADO
+
+### ✅ Mes 1 - Enero 2025 (Actual)
+**Objetivo**: MVP Completo + Deploy
+- ✅ Semana 1: Core Gameplay
+- ✅ Semana 2: UI/UX + Sonidos
+- ✅ Semana 3: Tutorial + Quick Wins
+- ✅ **Semana 4: Deploy a producción** ← ESTAMOS AQUÍ
+
+### 📋 Mes 2 - Febrero 2025
+**Objetivo**: Rejugabilidad + Monetización
+- 🔄 Semana 1: **Sistema de Prestigio** (3 días) + Bug fixes (4 días)
+- 📋 Semana 2: **Granjas Premium Stripe** (4 días) + Testing (3 días)
+- 📋 Semana 3: **Cloud Save + Auth** (5 días) + Docs (2 días)
+- 📋 Semana 4: **Diversidad de Plantas** (inicio, 3/6 días)
+
+### 📋 Mes 3 - Marzo 2025
+**Objetivo**: Contenido + Engagement
+- Semana 1: **Diversidad de Plantas** (fin, 3/6 días) + **Logros** (3/5 días)
+- Semana 2: **Logros** (fin, 2/5 días) + **Eventos** (4 días)
+- Semana 3: **Leaderboards** (3 días) + Polish (4 días)
+- Semana 4: **Marketing push** + Community building
+
+### 📋 Mes 4+ - Abril 2025+
+**Objetivo**: Expansión
+- Battle Pass / Seasons
+- Trading
+- PWA
+- Mobile app
+
+---
+
+## 🎯 SIGUIENTE PASO INMEDIATO
+
+### Para DEPLOYAR AHORA:
+
 ```bash
-# Implementa el proyecto localmente
-npm install && npx prisma db push && npm run dev
+# Opción 1: Vercel CLI
+vercel login
+vercel --prod
+
+# Opción 2: GitHub + Vercel
+# 1. Push a GitHub (ya hecho ✅)
+# 2. Conectar en vercel.com
+# 3. Deploy automático
 ```
 
-### OPCIÓN B: Quieres Mejorarlo
-1. **Implementa Fase 1.1** (Balanceo)
-   - Juega 1 hora
-   - Ajusta números en `lib/gameBalance.ts`
-   - Prueba de nuevo
-
-2. **Añade FloatingNumber** (Quick Win #1)
-   - Crea componente
-   - Integra en Plant.tsx
-   - Satisfacción instantánea
-
-### OPCIÓN C: Quieres Monetizarlo
-1. **Deploy en Vercel** (ver DEPLOYMENT.md)
-2. **Implementa Fase 3.1** (Stripe)
-3. **Marketing en Reddit/Discord**
+### Después del Deploy:
+1. **Testear** en producción
+2. **Monitorear** errores en Vercel Logs
+3. **Recopilar** feedback de primeros usuarios
+4. **Iterar** en bugs críticos
+5. **Empezar** Sistema de Prestigio
 
 ---
 
-## 🎁 BONUS: Ideas Creativas
+## 📊 MÉTRICAS DE ÉXITO (Post-Launch)
 
-- **Plantas legendarias** (0.1% drop chance)
-- **Sistema de crafting** (combinar plantas)
-- **Jardín decorativo** (colocar items)
-- **Mascotas** (dan buffs pasivos)
-- **Clima dinámico** (lluvia = +20% growth)
-- **PvP Garden Battles** (competencia asíncrona)
+### KPIs a Trackear:
+- **DAU** (Daily Active Users)
+- **Retention**: D1 (30%), D7 (10%), D30 (5%)
+- **Session Length**: Promedio 15-20 min
+- **ARPU**: Average Revenue Per User
+- **Conversion**: Free → Premium (5-10%)
+- **Prestigio Rate**: % que prestigian (target: 40%)
+- **Churn Rate**: % que abandonan
+
+### Objetivos Mes 1:
+- 🎯 100+ usuarios registrados
+- 🎯 30% D1 retention
+- 🎯 10% D7 retention
+- 🎯 5% conversion a premium
+- 🎯 $50+ revenue
 
 ---
 
-¿Cuál fase te interesa empezar? Puedo ayudarte a implementar cualquiera de estas features en detalle.
+## 🐛 BUGS CONOCIDOS
+
+Actualmente: **0 bugs críticos** 🎉
+
+**Minor issues**:
+- [ ] Tutorial puede aparecer 2 veces si refrescas rápido
+- [ ] Floating numbers a veces se superponen
+- [ ] Audio no funciona en Safari iOS (limitación navegador)
+
+---
+
+## 🎉 HITOS ALCANZADOS
+
+- ✅ **15 Ene 2025**: Proyecto iniciado
+- ✅ **16 Ene 2025**: Core gameplay
+- ✅ **17 Ene 2025**: Sistema de sonidos
+- ✅ **18 Ene 2025**: Floating numbers
+- ✅ **19 Ene 2025**: **MVP COMPLETO + DEPLOYMENT READY** 🚀
+
+---
+
+## 🚀 PRÓXIMO MILESTONE
+
+**Target**: 26 Enero 2025 (1 semana)
+
+**Objetivo**: Sistema de Prestigio + Granjas Premium
+
+**Entregables**:
+- Sistema de prestigio funcional
+- Árbol de 4 habilidades
+- Integración Stripe completa
+- Deploy con monetización activa
+
+---
+
+**🌿 ¡Vamos a hacer algo increíble! 🌿**

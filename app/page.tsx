@@ -12,6 +12,7 @@ import Plant from '@/components/Plant';
 import Shop from '@/components/Shop';
 import GameLoop from '@/components/GameLoop';
 import Notifications from '@/components/Notifications';
+import Tutorial from '@/components/Tutorial';
 
 export default function Home() {
   const plants = useGameStore((state) => state.plants);
@@ -36,7 +37,7 @@ export default function Home() {
         </div>
 
         {/* Grilla de Plantas */}
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 max-w-6xl mx-auto">
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 max-w-6xl mx-auto plant-container">
           {plants.map((plant) => (
             <Plant
               key={plant.id}
@@ -50,6 +51,7 @@ export default function Home() {
           {/* Slot para comprar nueva maceta */}
           {plants.length < 50 && (
             <button
+              data-tutorial="buy-pot"
               onClick={() => useGameStore.getState().toggleShop()}
               className="
                 w-32 h-32
@@ -156,6 +158,9 @@ export default function Home() {
 
       {/* Notifications */}
       <Notifications />
+
+      {/* Tutorial Interactivo */}
+      <Tutorial />
     </div>
   );
 }

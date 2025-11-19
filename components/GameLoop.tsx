@@ -14,6 +14,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import { calculateOfflineEarnings, formatTime, formatNumber } from '@/lib/gameBalance';
+import { useAnalytics, trackResourceMilestones, trackPlantMilestones } from '@/lib/analytics';
 
 const TICK_RATE = 100; // Actualizar cada 100ms (10 ticks por segundo)
 const SAVE_INTERVAL = 30000; // Guardar cada 30 segundos
@@ -35,9 +36,15 @@ export default function GameLoop() {
   const prestigeLevel = useGameStore((state) => state.prestigeLevel);
   const addSeeds = useGameStore((state) => state.addSeeds);
   const stats = useGameStore((state) => state.stats);
+  const coins = useGameStore((state) => state.coins);
+  const seeds = useGameStore((state) => state.seeds);
 
   const lastTickRef = useRef<number>(Date.now());
   const saveIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const milestoneCheckRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Inicializar analytics
+  const analytics = useAnalytics();
 
   // ========== INICIALIZACIÓN ==========
 
@@ -52,6 +59,9 @@ export default function GameLoop() {
       stopGameLoop();
       if (saveIntervalRef.current) {
         clearInterval(saveIntervalRef.current);
+      }
+      if (milestoneCheckRef.current) {
+        clearInterval(milestoneCheckRef.current);
       }
     };
   }, []);
@@ -132,6 +142,22 @@ export default function GameLoop() {
       }
     };
   }, []);
+
+  // ========== MILESTONE TRACKING ==========
+
+  useEffect(() => {
+    // Checkear milestones cada 5 segundos
+    milestoneCheckRef.current = setInterval(() => {
+      trackResourceMilestones(coins, seeds, analytics);
+      trackPlantMilestones(plants.length, analytics);
+    }, 5000);
+
+    return () => {
+      if (milestoneCheckRef.current) {
+        clearInterval(milestoneCheckRef.current);
+      }
+    };
+  }, [coins, seeds, plants.length, analytics]);
 
   // ========== MODAL DE OFFLINE ==========
 
