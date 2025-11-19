@@ -12,6 +12,7 @@ import { useGameStore } from '@/store/gameStore';
 import { calculatePlantProduction } from '@/lib/gameBalance';
 import { formatNumber } from '@/lib/gameBalance';
 import { useFloatingNumbers } from '@/components/FloatingNumber';
+import { useSoundManager } from '@/lib/soundManager';
 
 interface PlantProps {
   id: string;
@@ -34,6 +35,9 @@ export default function Plant({ id, tier, accumulatedSeeds, isActive }: PlantPro
   // Hook para números flotantes
   const { addFloatingNumber, FloatingNumbersRenderer } = useFloatingNumbers();
 
+  // Hook para sonidos
+  const { play: playSound } = useSoundManager();
+
   // Calcula la producción por segundo de esta planta
   const productionRate = calculatePlantProduction(
     tier,
@@ -54,6 +58,9 @@ export default function Plant({ id, tier, accumulatedSeeds, isActive }: PlantPro
   const handleHarvest = () => {
     if (accumulatedSeeds > 0 && !hasAutoHarvest) {
       const harvestedAmount = Math.floor(accumulatedSeeds);
+
+      // Reproducir sonido de recolección
+      playSound('harvest');
 
       // Mostrar floating number
       addFloatingNumber(harvestedAmount, 'seeds');

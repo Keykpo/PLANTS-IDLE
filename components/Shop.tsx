@@ -19,6 +19,7 @@ import {
   GAME_CONSTANTS,
 } from '@/lib/gameBalance';
 import { ShopFloatingNumbersProvider } from '@/components/ShopFloatingNumbers';
+import { useSoundManager } from '@/lib/soundManager';
 
 export default function Shop() {
   const [activeTab, setActiveTab] = useState<'upgrades' | 'expansion' | 'premium'>('upgrades');
@@ -113,6 +114,16 @@ function UpgradesTab() {
   const coins = useGameStore((state) => state.coins);
   const upgrades = useGameStore((state) => state.upgrades);
   const buyUpgrade = useGameStore((state) => state.buyUpgrade);
+  const { play: playSound } = useSoundManager();
+
+  const handleBuyUpgrade = (upgradeId: string) => {
+    const success = buyUpgrade(upgradeId);
+    if (success) {
+      playSound('purchase');
+    } else {
+      playSound('error');
+    }
+  };
 
   return (
     <div className="space-y-4">
@@ -151,7 +162,7 @@ function UpgradesTab() {
             </div>
 
             <button
-              onClick={() => buyUpgrade(upgrade.id)}
+              onClick={() => handleBuyUpgrade(upgrade.id)}
               disabled={!canAfford || isMaxed}
               className={`w-full py-2 px-4 rounded-lg font-semibold transition-all ${
                 canAfford && !isMaxed
@@ -174,10 +185,20 @@ function ExpansionTab() {
   const seeds = useGameStore((state) => state.seeds);
   const plants = useGameStore((state) => state.plants);
   const buyPot = useGameStore((state) => state.buyPot);
+  const { play: playSound } = useSoundManager();
 
   const nextPotCost = calculatePotCost(plants.length);
   const canAfford = seeds >= nextPotCost;
   const isAtMax = plants.length >= GAME_CONSTANTS.MAX_POTS_WITHOUT_PRESTIGE;
+
+  const handleBuyPot = () => {
+    const success = buyPot('NORMAL');
+    if (success) {
+      playSound('levelUp'); // Sonido especial para nueva maceta
+    } else {
+      playSound('error');
+    }
+  };
 
   return (
     <div className="space-y-6">
@@ -215,7 +236,7 @@ function ExpansionTab() {
             </div>
 
             <button
-              onClick={() => buyPot('NORMAL')}
+              onClick={handleBuyPot}
               disabled={!canAfford}
               className={`w-full py-3 px-6 rounded-xl font-bold transition-all ${
                 canAfford

@@ -11,6 +11,8 @@
 import { useGameStore } from '@/store/gameStore';
 import { formatNumber, calculateSeedValue } from '@/lib/gameBalance';
 import { useFloatingNumbers } from '@/components/FloatingNumber';
+import { useSoundManager } from '@/lib/soundManager';
+import SoundToggle from '@/components/SoundToggle';
 
 export default function Header() {
   const coins = useGameStore((state) => state.coins);
@@ -28,11 +30,17 @@ export default function Header() {
   // Hook para números flotantes
   const { addFloatingNumber, FloatingNumbersRenderer } = useFloatingNumbers();
 
+  // Hook para sonidos
+  const { play: playSound } = useSoundManager();
+
   // Handler personalizado para vender con floating numbers
   const handleSell = (amount: number) => {
     if (seeds >= amount) {
       const coinsEarned = Math.floor(amount * seedValue);
       sellSeeds(amount);
+
+      // Reproducir sonido de monedas
+      playSound('coin');
 
       // Mostrar floating number de monedas ganadas
       addFloatingNumber(coinsEarned, 'coins');
@@ -44,6 +52,9 @@ export default function Header() {
       const coinsEarned = Math.floor(seeds * seedValue);
       sellAllSeeds();
 
+      // Reproducir sonido de monedas
+      playSound('coin');
+
       // Mostrar floating number de monedas ganadas
       addFloatingNumber(coinsEarned, 'coins');
     }
@@ -51,6 +62,10 @@ export default function Header() {
 
   const handleHarvestAll = () => {
     harvestAllPlants();
+
+    // Reproducir sonido de éxito
+    playSound('success');
+
     // Mostrar efecto de éxito
     addFloatingNumber(1, 'success');
   };
@@ -65,6 +80,7 @@ export default function Header() {
           </h1>
 
           <div className="flex gap-2">
+            <SoundToggle />
             <button
               onClick={toggleShop}
               className="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-xl font-semibold transition-all hover:scale-105"
