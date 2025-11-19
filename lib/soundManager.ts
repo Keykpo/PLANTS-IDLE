@@ -2,7 +2,7 @@
  * Green Tycoon - Sound System
  *
  * Sistema de audio para el juego usando Web Audio API.
- * Genera sonidos sintéticos y soporta URLs externas.
+ * Utiliza sonidos profesionales de Mixkit.co (royalty-free).
  *
  * Sonidos disponibles:
  * - click: Click suave en botones/plantas
@@ -11,63 +11,26 @@
  * - purchase: Comprar upgrade/maceta
  * - success: Acción exitosa
  * - error: Error/no puedes hacer eso
+ * - levelUp: Subir de nivel/nueva maceta
+ * - y más...
  */
 
 'use client';
+
+import { SOUND_LIBRARY, SOUND_TYPE_MAP, getSoundAsset, type SoundAsset } from './soundLibrary';
 
 // ============================================
 // TIPOS
 // ============================================
 
-export type SoundType =
-  | 'click'
-  | 'coin'
-  | 'harvest'
-  | 'purchase'
-  | 'success'
-  | 'error'
-  | 'levelUp';
+export type SoundType = keyof typeof SOUND_TYPE_MAP;
 
 interface SoundConfig {
   url?: string; // URL opcional de audio externo
+  backup?: string; // URL de respaldo
   volume?: number; // 0-1
   playbackRate?: number; // Velocidad de reproducción
 }
-
-// ============================================
-// CONFIGURACIÓN DE SONIDOS
-// ============================================
-
-const SOUND_CONFIGS: Record<SoundType, SoundConfig> = {
-  click: {
-    volume: 0.3,
-    playbackRate: 1.0,
-  },
-  coin: {
-    volume: 0.4,
-    playbackRate: 1.0,
-  },
-  harvest: {
-    volume: 0.35,
-    playbackRate: 1.0,
-  },
-  purchase: {
-    volume: 0.5,
-    playbackRate: 1.0,
-  },
-  success: {
-    volume: 0.6,
-    playbackRate: 1.0,
-  },
-  error: {
-    volume: 0.4,
-    playbackRate: 1.0,
-  },
-  levelUp: {
-    volume: 0.7,
-    playbackRate: 1.0,
-  },
-};
 
 // ============================================
 // CLASE DE SONIDO
@@ -191,7 +154,7 @@ class SoundManager {
   /**
    * Reproduce audio desde URL
    */
-  private async playAudioUrl(url: string, config: SoundConfig) {
+  private async playAudioUrl(url: string, config: SoundConfig, fallbackUrl?: string) {
     if (!this.audioContext) return;
 
     try {
@@ -222,8 +185,34 @@ class SoundManager {
       source.start(0);
     } catch (error) {
       console.warn(`Error playing audio from ${url}:`, error);
-      // Fallback a sonido sintético
-      await this.playSynthSound('click', config);
+
+      // Intentar URL de respaldo
+      if (fallbackUrl && fallbackUrl !== url) {
+        console.log(`Trying backup URL: ${fallbackUrl}`);
+        await this.playAudioUrl(fallbackUrl, config);
+      } else {
+        // Último fallback: sonido sintético
+        console.log('Falling back to synthetic sound');
+        await this.playSynthSound('click', config);
+      }
+    }
+  }
+
+  /**
+   * Precarga un sonido en caché
+   */
+  public async preload(url: string): Promise<boolean> {
+    if (!this.audioContext || this.audioCache.has(url)) return true;
+
+    try {
+      const response = await fetch(url);
+      const arrayBuffer = await response.arrayBuffer();
+      const buffer = await this.audioContext.decodeAudioData(arrayBuffer);
+      this.audioCache.set(url, buffer);
+      return true;
+    } catch (error) {
+      console.warn(`Failed to preload ${url}:`, error);
+      return false;
     }
   }
 
@@ -233,13 +222,27 @@ class SoundManager {
   public async play(type: SoundType) {
     if (!this.enabled || !this.audioContext) return;
 
-    const config = SOUND_CONFIGS[type];
+    // Obtener configuración de la librería
+    const soundKey = SOUND_TYPE_MAP[type];
+    const asset = getSoundAsset(soundKey);
+
+    if (!asset) {
+      console.warn(`Sound asset not found for type: ${type}`);
+      return;
+    }
+
+    const config: SoundConfig = {
+      url: asset.url,
+      backup: asset.backup,
+      volume: asset.volume,
+      playbackRate: asset.playbackRate,
+    };
 
     // Si hay URL, usar audio externo
     if (config.url) {
-      await this.playAudioUrl(config.url, config);
+      await this.playAudioUrl(config.url, config, config.backup);
     } else {
-      // Usar sonido sintético
+      // Fallback a sonido sintético
       await this.playSynthSound(type, config);
     }
   }
@@ -344,30 +347,3 @@ export function useSoundManager() {
   };
 }
 
-// ============================================
-// UTILIDAD: URLs DE SONIDOS GRATUITOS
-// ============================================
-
-/**
- * URLs de sonidos gratuitos de Pixabay/Mixkit
- * (pueden usarse opcionalmente)
- */
-export const FREE_SOUND_URLS = {
-  click: 'https://cdn.pixabay.com/audio/2021/08/04/audio_0625c1539c.mp3',
-  coin: 'https://cdn.pixabay.com/audio/2022/03/10/audio_4dedf26171.mp3',
-  harvest: 'https://cdn.pixabay.com/audio/2022/03/24/audio_c9bd5e2cc1.mp3',
-  purchase: 'https://cdn.pixabay.com/audio/2022/03/15/audio_4dcf8ed93f.mp3',
-  success: 'https://cdn.pixabay.com/audio/2021/08/04/audio_12b0c7443c.mp3',
-};
-
-/**
- * Actualiza la configuración de sonidos para usar URLs externas
- */
-export function useExternalSounds() {
-  Object.entries(FREE_SOUND_URLS).forEach(([key, url]) => {
-    const soundType = key as SoundType;
-    if (SOUND_CONFIGS[soundType]) {
-      SOUND_CONFIGS[soundType].url = url;
-    }
-  });
-}
