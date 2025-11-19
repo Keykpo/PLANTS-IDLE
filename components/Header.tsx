@@ -10,6 +10,7 @@
 
 import { useGameStore } from '@/store/gameStore';
 import { formatNumber, calculateSeedValue } from '@/lib/gameBalance';
+import { useFloatingNumbers } from '@/components/FloatingNumber';
 
 export default function Header() {
   const coins = useGameStore((state) => state.coins);
@@ -23,6 +24,36 @@ export default function Header() {
   const seedValue = calculateSeedValue(upgrades.SEED_VALUE);
   const hasBulkSell = upgrades.BULK_SELL >= 1;
   const hasAutoHarvest = upgrades.AUTO_HARVEST >= 1;
+
+  // Hook para números flotantes
+  const { addFloatingNumber, FloatingNumbersRenderer } = useFloatingNumbers();
+
+  // Handler personalizado para vender con floating numbers
+  const handleSell = (amount: number) => {
+    if (seeds >= amount) {
+      const coinsEarned = Math.floor(amount * seedValue);
+      sellSeeds(amount);
+
+      // Mostrar floating number de monedas ganadas
+      addFloatingNumber(coinsEarned, 'coins');
+    }
+  };
+
+  const handleSellAll = () => {
+    if (seeds > 0) {
+      const coinsEarned = Math.floor(seeds * seedValue);
+      sellAllSeeds();
+
+      // Mostrar floating number de monedas ganadas
+      addFloatingNumber(coinsEarned, 'coins');
+    }
+  };
+
+  const handleHarvestAll = () => {
+    harvestAllPlants();
+    // Mostrar efecto de éxito
+    addFloatingNumber(1, 'success');
+  };
 
   return (
     <header className="bg-gradient-to-r from-green-600 via-emerald-600 to-green-600 text-white shadow-2xl">
@@ -66,7 +97,7 @@ export default function Header() {
 
               <div className="flex flex-col gap-1">
                 <button
-                  onClick={() => sellSeeds(10)}
+                  onClick={() => handleSell(10)}
                   disabled={seeds < 10}
                   className="bg-yellow-500 hover:bg-yellow-600 disabled:bg-gray-500 disabled:cursor-not-allowed px-3 py-1 rounded-lg text-sm font-semibold transition-all"
                 >
@@ -74,7 +105,7 @@ export default function Header() {
                 </button>
                 {hasBulkSell && (
                   <button
-                    onClick={sellAllSeeds}
+                    onClick={handleSellAll}
                     disabled={seeds === 0}
                     className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-500 disabled:cursor-not-allowed px-3 py-1 rounded-lg text-sm font-semibold transition-all"
                   >
@@ -91,7 +122,7 @@ export default function Header() {
             <div className="space-y-2">
               {!hasAutoHarvest && (
                 <button
-                  onClick={harvestAllPlants}
+                  onClick={handleHarvestAll}
                   className="w-full bg-green-500 hover:bg-green-600 px-4 py-2 rounded-lg font-semibold transition-all hover:scale-105"
                 >
                   🌾 Recolectar Todo
@@ -111,6 +142,11 @@ export default function Header() {
           <span>💾 Auto-guardado activo</span>
           <span>•</span>
           <span>⚡ Versión 1.0.0</span>
+        </div>
+
+        {/* Floating Numbers */}
+        <div className="relative">
+          <FloatingNumbersRenderer />
         </div>
       </div>
     </header>

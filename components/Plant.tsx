@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 import { useGameStore } from '@/store/gameStore';
 import { calculatePlantProduction } from '@/lib/gameBalance';
 import { formatNumber } from '@/lib/gameBalance';
+import { useFloatingNumbers } from '@/components/FloatingNumber';
 
 interface PlantProps {
   id: string;
@@ -29,6 +30,9 @@ export default function Plant({ id, tier, accumulatedSeeds, isActive }: PlantPro
 
   const hasAutoHarvest = upgrades.AUTO_HARVEST >= 1;
   const isPremium = tier === 'PREMIUM';
+
+  // Hook para números flotantes
+  const { addFloatingNumber, FloatingNumbersRenderer } = useFloatingNumbers();
 
   // Calcula la producción por segundo de esta planta
   const productionRate = calculatePlantProduction(
@@ -49,6 +53,12 @@ export default function Plant({ id, tier, accumulatedSeeds, isActive }: PlantPro
   // Handler de recolección
   const handleHarvest = () => {
     if (accumulatedSeeds > 0 && !hasAutoHarvest) {
+      const harvestedAmount = Math.floor(accumulatedSeeds);
+
+      // Mostrar floating number
+      addFloatingNumber(harvestedAmount, 'seeds');
+
+      // Recolectar
       harvestPlant(id);
       setShowHarvestEffect(true);
       setTimeout(() => setShowHarvestEffect(false), 500);
@@ -127,6 +137,9 @@ export default function Plant({ id, tier, accumulatedSeeds, isActive }: PlantPro
       {!hasAutoHarvest && accumulatedSeeds > 5 && (
         <div className="absolute inset-0 rounded-2xl border-4 border-green-400 animate-pulse opacity-50 pointer-events-none"></div>
       )}
+
+      {/* Floating Numbers */}
+      <FloatingNumbersRenderer />
     </div>
   );
 }

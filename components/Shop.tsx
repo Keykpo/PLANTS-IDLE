@@ -18,6 +18,7 @@ import {
   formatNumber,
   GAME_CONSTANTS,
 } from '@/lib/gameBalance';
+import { ShopFloatingNumbersProvider } from '@/components/ShopFloatingNumbers';
 
 export default function Shop() {
   const [activeTab, setActiveTab] = useState<'upgrades' | 'expansion' | 'premium'>('upgrades');
@@ -34,8 +35,9 @@ export default function Shop() {
   if (!showShop) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <ShopFloatingNumbersProvider>
+      <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
         <div className="bg-gradient-to-r from-green-600 to-emerald-600 p-6 text-white">
           <div className="flex justify-between items-center">
@@ -99,8 +101,9 @@ export default function Shop() {
           {activeTab === 'expansion' && <ExpansionTab />}
           {activeTab === 'premium' && <PremiumTab />}
         </div>
+        </div>
       </div>
-    </div>
+    </ShopFloatingNumbersProvider>
   );
 }
 
