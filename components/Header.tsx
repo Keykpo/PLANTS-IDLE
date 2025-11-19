@@ -13,6 +13,8 @@ import { formatNumber, calculateSeedValue } from '@/lib/gameBalance';
 import { useFloatingNumbers } from '@/components/FloatingNumber';
 import { useSoundManager } from '@/lib/soundManager';
 import SoundToggle from '@/components/SoundToggle';
+import PlayerStats from '@/components/PlayerStats';
+import Settings from '@/components/Settings';
 
 export default function Header() {
   const coins = useGameStore((state) => state.coins);
@@ -71,7 +73,7 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-gradient-to-r from-green-600 via-emerald-600 to-green-600 text-white shadow-2xl">
+    <header className="bg-gradient-to-r from-green-600 via-emerald-600 to-green-600 text-white shadow-2xl header">
       <div className="container mx-auto px-4 py-4">
         {/* Título */}
         <div className="flex items-center justify-between mb-4">
@@ -80,8 +82,11 @@ export default function Header() {
           </h1>
 
           <div className="flex gap-2">
+            <PlayerStats />
             <SoundToggle />
+            <Settings />
             <button
+              data-tutorial="shop-button"
               onClick={toggleShop}
               className="bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-2 rounded-xl font-semibold transition-all hover:scale-105"
             >
@@ -121,6 +126,7 @@ export default function Header() {
                 </button>
                 {hasBulkSell && (
                   <button
+                    data-tutorial="sell-button"
                     onClick={handleSellAll}
                     disabled={seeds === 0}
                     className="bg-orange-500 hover:bg-orange-600 disabled:bg-gray-500 disabled:cursor-not-allowed px-3 py-1 rounded-lg text-sm font-semibold transition-all"
